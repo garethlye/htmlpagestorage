@@ -5,181 +5,197 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice Data Input</title>
     <style>
-        :root {
-            --primary: #EA449A;
-            --primary-hover: #d03583;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text: #0f172a;
-            --border: #cbd5e1;
-        }
+    /* 1. Global Box Sizing Reset (Crucial for Mobile Padding) */
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
+    :root {
+        --primary: #EA449A;
+        --primary-hover: #d03583;
+        --bg: #f8fafc;
+        --card-bg: #ffffff;
+        --text: #0f172a;
+        --border: #cbd5e1;
+    }
 
-        .container {
-            background-color: var(--card-bg);
-            width: 100%;
-            max-width: 500px;
-            padding: 24px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            box-sizing: border-box;
-        }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
 
-        h2 {
-            margin-top: 0;
-            margin-bottom: 20px;
-            color: var(--text);
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 10px;
-        }
+    .container {
+        background-color: var(--card-bg);
+        width: 100%;
+        max-width: 500px;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
 
+    h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: var(--text);
+        border-bottom: 2px solid var(--border);
+        padding-bottom: 10px;
+    }
+
+    /* 2. Grid with minmax to prevent blowout */
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        width: 100%;
+    }
+
+    .full-width {
+        grid-column: span 2;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        min-width: 0; /* Prevents input overflow in CSS Grid */
+    }
+
+    label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #475569;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 0.95rem;
+        outline: none;
+        transition: border-color 0.2s;
+        background-color: #ffffff;
+        color: var(--text);
+    }
+
+    input:focus, select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(234, 68, 154, 0.2);
+    }
+
+    /* Disable Spin Buttons (Up/Down arrows) */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    /* Currency Input Wrapper */
+    .currency-input-wrapper {
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background-color: #ffffff;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .currency-symbol {
+        padding: 10px 12px;
+        background-color: #f1f5f9;
+        color: #475569;
+        font-weight: 600;
+        border-right: 1px solid var(--border);
+        flex-shrink: 0;
+    }
+
+    .currency-input-wrapper input {
+        border: none;
+        border-radius: 0;
+        width: 100%;
+        min-width: 0; /* Prevents flex item from expanding past container */
+    }
+
+    .currency-input-wrapper input:focus {
+        box-shadow: none;
+    }
+
+    .currency-input-wrapper:focus-within {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 2px rgba(234, 68, 154, 0.2);
+    }
+
+    /* Phone Input Layout */
+    .phone-input-wrapper {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .country-select {
+        width: 110px;
+        flex-shrink: 0;
+    }
+
+    .phone-field {
+        flex: 1;
+        min-width: 0; /* Allows text field to shrink gracefully on narrow screens */
+    }
+
+    /* Total Display Block */
+    .total-display {
+        background-color: #f1f5f9;
+        padding: 14px 12px;
+        border-radius: 6px;
+        font-size: 1.15rem;
+        font-weight: bold;
+        text-align: right;
+        margin-top: 10px;
+        grid-column: span 2;
+        width: 100%;
+    }
+
+    /* Review and Pay Button */
+    .btn-submit {
+        grid-column: span 2;
+        background-color: #EA449A;
+        color: #ffffff;
+        padding: 14px;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        margin-top: 10px;
+        width: 100%;
+    }
+
+    .btn-submit:hover {
+        background-color: var(--primary-hover);
+    }
+
+    /* Responsive Breakpoint for Mobile */
+    @media (max-width: 480px) {
         .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            grid-template-columns: 1fr; /* Switch to single column stack */
         }
-
-        .full-width {
-            grid-column: span 2;
+        .full-width, .total-display, .btn-submit, .form-group {
+            grid-column: span 1;
         }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #475569;
-        }
-
-        input, select {
-            padding: 10px 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 0.95rem;
-            outline: none;
-            transition: border-color 0.2s;
-            background-color: #ffffff;
-            color: var(--text);
-        }
-
-        input:focus, select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(234, 68, 154, 0.2);
-        }
-
-        /* Hide Spin Buttons (Up/Down arrows) on Number Inputs */
-        input[type="number"]::-webkit-outer-spin-button,
-        input[type="number"]::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type="number"] {
-            -moz-appearance: textfield; /* Firefox */
-        }
-
-        /* RM Currency Input Styling */
-        .currency-input-wrapper {
-            display: flex;
-            align-items: center;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            background-color: #ffffff;
-            overflow: hidden;
-        }
-
-        .currency-symbol {
-            padding: 10px 12px;
-            background-color: #f1f5f9;
-            color: #475569;
-            font-weight: 600;
-            border-right: 1px solid var(--border);
-        }
-
-        .currency-input-wrapper input {
-            border: none;
-            border-radius: 0;
-            width: 100%;
-        }
-
-        .currency-input-wrapper input:focus {
-            box-shadow: none;
-        }
-
-        .currency-input-wrapper:focus-within {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(234, 68, 154, 0.2);
-        }
-
-        /* Phone Input Layout */
-        .phone-input-wrapper {
-            display: flex;
-            gap: 8px;
-        }
-
-        .country-select {
-            width: 130px;
-            flex-shrink: 0;
-        }
-
-        .phone-field {
-            flex-grow: 1;
-        }
-
-        .total-display {
-            background-color: #f1f5f9;
-            padding: 14px 12px;
-            border-radius: 6px;
-            font-size: 1.15rem;
-            font-weight: bold;
-            text-align: right;
-            margin-top: 10px;
-            grid-column: span 2;
-        }
-
-        /* Primary Button */
-        .btn-submit {
-            grid-column: span 2;
-            background-color: #EA449A;
-            color: #ffffff;
-            padding: 14px;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-top: 10px;
-        }
-
-        .btn-submit:hover {
-            background-color: var(--primary-hover);
-        }
-
-        @media (max-width: 480px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            .full-width, .total-display, .btn-submit {
-                grid-column: span 1;
-            }
-            .phone-input-wrapper {
-                flex-direction: row;
-            }
-        }
-    </style>
+    }
+</style>
 </head>
 <body>
 
