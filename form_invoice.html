@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Generator Form</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --border: #cbd5e1;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 650px;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            box-sizing: border-box;
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #475569;
+        }
+
+        input {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .total-display {
+            background-color: #f1f5f9;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 10px;
+            grid-column: span 2;
+        }
+
+        .btn-submit {
+            grid-column: span 2;
+            background-color: var(--primary);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-hover);
+        }
+
+        @media (max-width: 480px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .full-width, .total-display, .btn-submit {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Invoice Data Input</h2>
+    <form id="invoiceForm" onsubmit="handleSubmit(event)">
+        <div class="form-grid">
+            
+            <!-- 1. Invoice Number -->
+            <div class="form-group">
+                <label for="invoiceNumber">Invoice Number</label>
+                <input type="text" id="invoiceNumber" placeholder="INV-2026-001" required>
+            </div>
+
+            <!-- 2. Invoice Date -->
+            <div class="form-group">
+                <label for="invoiceDate">Invoice Date</label>
+                <input type="date" id="invoiceDate" required>
+            </div>
+
+            <!-- 3. Client Name -->
+            <div class="form-group full-width">
+                <label for="clientName">Client Name / Business</label>
+                <input type="text" id="clientName" placeholder="Acme Corporation" required>
+            </div>
+
+            <!-- 4. Client Email -->
+            <div class="form-group full-width">
+                <label for="clientEmail">Client Email</label>
+                <input type="email" id="clientEmail" placeholder="billing@acme.com" required>
+            </div>
+
+            <!-- 5. Item Description -->
+            <div class="form-group full-width">
+                <label for="itemDescription">Item / Service Description</label>
+                <input type="text" id="itemDescription" placeholder="Software Development Services" required>
+            </div>
+
+            <!-- 6. Quantity -->
+            <div class="form-group">
+                <label for="itemQuantity">Quantity / Hours</label>
+                <input type="number" id="itemQuantity" min="1" value="1" oninput="calculateTotal()" required>
+            </div>
+
+            <!-- 7. Unit Price -->
+            <div class="form-group">
+                <label for="unitPrice">Unit Price (RM / USD)</label>
+                <input type="number" id="unitPrice" step="0.01" min="0" placeholder="150.00" oninput="calculateTotal()" required>
+            </div>
+
+            <!-- Calculated Total -->
+            <div class="total-display">
+                Total Amount: <span id="calculatedTotal">0.00</span>
+            </div>
+
+            <!-- 8. Payment Notes -->
+            <div class="form-group full-width">
+                <label for="paymentNotes">Payment Terms / Notes</label>
+                <input type="text" id="paymentNotes" placeholder="Net 30 days - Bank Transfer">
+            </div>
+
+            <button type="submit" class="btn-submit">Submit Invoice Entry</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Set default date to today
+    document.getElementById('invoiceDate').valueAsDate = new Date();
+
+    function calculateTotal() {
+        const qty = parseFloat(document.getElementById('itemQuantity').value) || 0;
+        const price = parseFloat(document.getElementById('unitPrice').value) || 0;
+        const total = qty * price;
+        document.getElementById('calculatedTotal').innerText = total.toFixed(2);
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault();
+        
+        const formData = {
+            invoiceNumber: document.getElementById('invoiceNumber').value,
+            invoiceDate: document.getElementById('invoiceDate').value,
+            clientName: document.getElementById('clientName').value,
+            clientEmail: document.getElementById('clientEmail').value,
+            itemDescription: document.getElementById('itemDescription').value,
+            quantity: document.getElementById('itemQuantity').value,
+            unitPrice: document.getElementById('unitPrice').value,
+            totalAmount: document.getElementById('calculatedTotal').innerText,
+            notes: document.getElementById('paymentNotes').value
+        };
+
+        console.log("Submitted Data:", formData);
+        alert(`Invoice ${formData.invoiceNumber} submitted successfully! Check console for details.`);
+    }
+</script>
+
+</body>
+</html>
