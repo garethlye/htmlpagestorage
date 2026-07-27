@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Generator Form</title>
+    <title>Invoice Data Input</title>
     <style>
         :root {
             --primary: #2563eb;
@@ -27,7 +27,7 @@
         .container {
             background-color: var(--card-bg);
             width: 100%;
-            max-width: 650px;
+            max-width: 500px;
             padding: 24px;
             border-radius: 8px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -78,11 +78,44 @@
             box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
         }
 
+        /* RM Currency Input Styling */
+        .currency-input-wrapper {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background-color: #ffffff;
+            overflow: hidden;
+        }
+
+        .currency-symbol {
+            padding: 10px 12px;
+            background-color: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+            border-right: 1px solid var(--border);
+        }
+
+        .currency-input-wrapper input {
+            border: none;
+            border-radius: 0;
+            width: 100%;
+        }
+
+        .currency-input-wrapper input:focus {
+            box-shadow: none;
+        }
+
+        .currency-input-wrapper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+        }
+
         .total-display {
             background-color: #f1f5f9;
-            padding: 12px;
+            padding: 14px 12px;
             border-radius: 6px;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: bold;
             text-align: right;
             margin-top: 10px;
@@ -136,45 +169,30 @@
                 <input type="date" id="invoiceDate" required>
             </div>
 
-            <!-- 3. Client Name -->
+            <!-- 3. Your Email (Prefilled by Android, Editable) -->
             <div class="form-group full-width">
-                <label for="clientName">Client Name / Business</label>
-                <input type="text" id="clientName" placeholder="Acme Corporation" required>
+                <label for="userEmail">Your Email</label>
+                <input type="email" id="userEmail" placeholder="user@example.com" required>
             </div>
 
-            <!-- 4. Client Email -->
+            <!-- 4. Phone Number (Prefilled by Android, Editable) -->
             <div class="form-group full-width">
-                <label for="clientEmail">Client Email</label>
-                <input type="email" id="clientEmail" placeholder="billing@acme.com" required>
+                <label for="phoneNumber">Phone Number</label>
+                <input type="tel" id="phoneNumber" placeholder="+60 12-345 6789" required>
             </div>
 
-            <!-- 5. Item Description -->
+            <!-- 5. Amount (Fixed RM prefix, 2 decimal places) -->
             <div class="form-group full-width">
-                <label for="itemDescription">Item / Service Description</label>
-                <input type="text" id="itemDescription" placeholder="Software Development Services" required>
+                <label for="amount">Amount</label>
+                <div class="currency-input-wrapper">
+                    <span class="currency-symbol">RM</span>
+                    <input type="number" id="amount" step="0.01" min="0" placeholder="0.00" oninput="updateTotal()" required>
+                </div>
             </div>
 
-            <!-- 6. Quantity -->
-            <div class="form-group">
-                <label for="itemQuantity">Quantity / Hours</label>
-                <input type="number" id="itemQuantity" min="1" value="1" oninput="calculateTotal()" required>
-            </div>
-
-            <!-- 7. Unit Price -->
-            <div class="form-group">
-                <label for="unitPrice">Unit Price (RM / USD)</label>
-                <input type="number" id="unitPrice" step="0.01" min="0" placeholder="150.00" oninput="calculateTotal()" required>
-            </div>
-
-            <!-- Calculated Total -->
+            <!-- Total Amount Display -->
             <div class="total-display">
-                Total Amount: <span id="calculatedTotal">0.00</span>
-            </div>
-
-            <!-- 8. Payment Notes -->
-            <div class="form-group full-width">
-                <label for="paymentNotes">Payment Terms / Notes</label>
-                <input type="text" id="paymentNotes" placeholder="Net 30 days - Bank Transfer">
+                Total Amount: RM <span id="calculatedTotal">0.00</span>
             </div>
 
             <button type="submit" class="btn-submit">Submit Invoice Entry</button>
@@ -186,30 +204,38 @@
     // Set default date to today
     document.getElementById('invoiceDate').valueAsDate = new Date();
 
-    function calculateTotal() {
-        const qty = parseFloat(document.getElementById('itemQuantity').value) || 0;
-        const price = parseFloat(document.getElementById('unitPrice').value) || 0;
-        const total = qty * price;
-        document.getElementById('calculatedTotal').innerText = total.toFixed(2);
+    // Updates the total display to mirror the Amount input
+    function updateTotal() {
+        const val = parseFloat(document.getElementById('amount').value) || 0;
+        document.getElementById('calculatedTotal').innerText = val.toFixed(2);
+    }
+
+    // Function called directly from Android Kotlin/Java code
+    function receiveUserDataFromAndroid(email, phone) {
+        if (email) {
+            document.getElementById('userEmail').value = email;
+        }
+        if (phone) {
+            document.getElementById('phoneNumber').value = phone;
+        }
     }
 
     function handleSubmit(event) {
         event.preventDefault();
         
+        const rawAmount = parseFloat(document.getElementById('amount').value) || 0;
+
         const formData = {
             invoiceNumber: document.getElementById('invoiceNumber').value,
             invoiceDate: document.getElementById('invoiceDate').value,
-            clientName: document.getElementById('clientName').value,
-            clientEmail: document.getElementById('clientEmail').value,
-            itemDescription: document.getElementById('itemDescription').value,
-            quantity: document.getElementById('itemQuantity').value,
-            unitPrice: document.getElementById('unitPrice').value,
-            totalAmount: document.getElementById('calculatedTotal').innerText,
-            notes: document.getElementById('paymentNotes').value
+            userEmail: document.getElementById('userEmail').value,
+            phoneNumber: document.getElementById('phoneNumber').value,
+            amount: rawAmount.toFixed(2),
+            totalAmount: rawAmount.toFixed(2)
         };
 
         console.log("Submitted Data:", formData);
-        alert(`Invoice ${formData.invoiceNumber} submitted successfully! Check console for details.`);
+        alert(`Invoice ${formData.invoiceNumber} submitted for RM ${formData.totalAmount}!`);
     }
 </script>
 
