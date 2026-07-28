@@ -5,197 +5,192 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice Data Input</title>
     <style>
-    /* 1. Global Box Sizing Reset (Crucial for Mobile Padding) */
-    *, *::before, *::after {
-        box-sizing: border-box;
-    }
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
 
-    :root {
-        --primary: #EA449A;
-        --primary-hover: #d03583;
-        --bg: #f8fafc;
-        --card-bg: #ffffff;
-        --text: #0f172a;
-        --border: #cbd5e1;
-    }
+        :root {
+            --primary: #EA449A;
+            --primary-hover: #d03583;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --border: #cbd5e1;
+        }
 
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        background-color: var(--bg);
-        color: var(--text);
-        margin: 0;
-        padding: 16px;
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
 
-    .container {
-        background-color: var(--card-bg);
-        width: 100%;
-        max-width: 500px;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    }
+        .container {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
 
-    h2 {
-        margin-top: 0;
-        margin-bottom: 20px;
-        color: var(--text);
-        border-bottom: 2px solid var(--border);
-        padding-bottom: 10px;
-    }
+        h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--text);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 10px;
+        }
 
-    /* 2. Grid with minmax to prevent blowout */
-    .form-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 16px;
-        width: 100%;
-    }
-
-    .full-width {
-        grid-column: span 2;
-    }
-
-    .form-group {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        min-width: 0; /* Prevents input overflow in CSS Grid */
-    }
-
-    label {
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin-bottom: 6px;
-        color: #475569;
-    }
-
-    input, select {
-        width: 100%;
-        padding: 10px 12px;
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        font-size: 0.95rem;
-        outline: none;
-        transition: border-color 0.2s;
-        background-color: #ffffff;
-        color: var(--text);
-    }
-
-    input:focus, select:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 2px rgba(234, 68, 154, 0.2);
-    }
-
-    /* Disable Spin Buttons (Up/Down arrows) */
-    input[type="number"]::-webkit-outer-spin-button,
-    input[type="number"]::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-    input[type="number"] {
-        -moz-appearance: textfield;
-    }
-
-    /* Currency Input Wrapper */
-    .currency-input-wrapper {
-        display: flex;
-        align-items: center;
-        border: 1px solid var(--border);
-        border-radius: 6px;
-        background-color: #ffffff;
-        overflow: hidden;
-        width: 100%;
-    }
-
-    .currency-symbol {
-        padding: 10px 12px;
-        background-color: #f1f5f9;
-        color: #475569;
-        font-weight: 600;
-        border-right: 1px solid var(--border);
-        flex-shrink: 0;
-    }
-
-    .currency-input-wrapper input {
-        border: none;
-        border-radius: 0;
-        width: 100%;
-        min-width: 0; /* Prevents flex item from expanding past container */
-    }
-
-    .currency-input-wrapper input:focus {
-        box-shadow: none;
-    }
-
-    .currency-input-wrapper:focus-within {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 2px rgba(234, 68, 154, 0.2);
-    }
-
-    /* Phone Input Layout */
-    .phone-input-wrapper {
-        display: flex;
-        gap: 8px;
-        width: 100%;
-    }
-
-    .country-select {
-        width: 110px;
-        flex-shrink: 0;
-    }
-
-    .phone-field {
-        flex: 1;
-        min-width: 0; /* Allows text field to shrink gracefully on narrow screens */
-    }
-
-    /* Total Display Block */
-    .total-display {
-        background-color: #f1f5f9;
-        padding: 14px 12px;
-        border-radius: 6px;
-        font-size: 1.15rem;
-        font-weight: bold;
-        text-align: right;
-        margin-top: 10px;
-        grid-column: span 2;
-        width: 100%;
-    }
-
-    /* Review and Pay Button */
-    .btn-submit {
-        grid-column: span 2;
-        background-color: #EA449A;
-        color: #ffffff;
-        padding: 14px;
-        border: none;
-        border-radius: 6px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        margin-top: 10px;
-        width: 100%;
-    }
-
-    .btn-submit:hover {
-        background-color: var(--primary-hover);
-    }
-
-    /* Responsive Breakpoint for Mobile */
-    @media (max-width: 480px) {
         .form-grid {
-            grid-template-columns: 1fr; /* Switch to single column stack */
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 16px;
+            width: 100%;
         }
-        .full-width, .total-display, .btn-submit, .form-group {
-            grid-column: span 1;
+
+        .full-width {
+            grid-column: span 2;
         }
-    }
-</style>
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            min-width: 0;
+        }
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #475569;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+            background-color: #ffffff;
+            color: var(--text);
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(234, 68, 154, 0.2);
+        }
+
+        /* Disable Spin Buttons (Up/Down arrows) for Number Inputs */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        /* RM Currency Input Styling */
+        .currency-input-wrapper {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background-color: #ffffff;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .currency-symbol {
+            padding: 10px 12px;
+            background-color: #f1f5f9;
+            color: #475569;
+            font-weight: 600;
+            border-right: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .currency-input-wrapper input {
+            border: none;
+            border-radius: 0;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .currency-input-wrapper input:focus {
+            box-shadow: none;
+        }
+
+        .currency-input-wrapper:focus-within {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(234, 68, 154, 0.2);
+        }
+
+        /* Phone Input Component */
+        .phone-input-wrapper {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .country-select {
+            width: 110px;
+            flex-shrink: 0;
+        }
+
+        .phone-field {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .total-display {
+            background-color: #f1f5f9;
+            padding: 14px 12px;
+            border-radius: 6px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            text-align: right;
+            margin-top: 10px;
+            grid-column: span 2;
+            width: 100%;
+        }
+
+        .btn-submit {
+            grid-column: span 2;
+            background-color: #EA449A;
+            color: #ffffff;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-hover);
+        }
+
+        @media (max-width: 480px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .full-width, .total-display, .btn-submit, .form-group {
+                grid-column: span 1;
+            }
+        }
+    </style>
 </head>
 <body>
 
@@ -204,32 +199,32 @@
     <form id="invoiceForm" onsubmit="handleSubmit(event)">
         <div class="form-grid">
             
-            <!-- 1. Invoice Number -->
-            <div class="form-group">
+            <!-- 1. Invoice Number (Spans Full Width to keep on its own line) -->
+            <div class="form-group full-width">
                 <label for="invoiceNumber">Invoice Number</label>
                 <input type="text" id="invoiceNumber" placeholder="INV-2026-001" required>
             </div>
 
-            <!-- 2. Invoice Date -->
-            <div class="form-group">
-                <label for="invoiceDate">Invoice Date</label>
-                <input type="date" id="invoiceDate" required>
+            <!-- 2. Additional Reference (Spans Full Width on the Next Line) -->
+            <div class="form-group full-width">
+                <label for="additionalReference">Additional reference</label>
+                <input type="text" id="additionalReference" placeholder="e.g. Student ID / Note">
             </div>
 
-            <!-- 3. Your Email (Prefilled by Android, Editable) -->
+            <!-- 3. Your Email -->
             <div class="form-group full-width">
                 <label for="userEmail">Your Email</label>
                 <input type="email" id="userEmail" placeholder="user@example.com" required>
             </div>
 
-            <!-- 4. Phone Number Input -->
+            <!-- 4. Phone Number -->
             <div class="form-group full-width">
                 <label for="phoneNumber">Phone Number</label>
                 <div class="phone-input-wrapper">
                     <select id="countryCode" class="country-select">
                         <option value="+60">🇲🇾 +60</option>
                         <option value="+65">🇸🇬 +65</option>
-                        <option value="+62">🇮どもの +62</option>
+                        <option value="+62">🇮🇩 +62</option>
                         <option value="+66">🇹🇭 +66</option>
                         <option value="+1">🇺🇸 +1</option>
                         <option value="+44">🇬🇧 +44</option>
@@ -275,22 +270,18 @@
 </div>
 
 <script>
-    // Set default date to today
-    document.getElementById('invoiceDate').valueAsDate = new Date();
-
-    // Updates total display to mirror the Amount input
     function updateTotal() {
         const val = parseFloat(document.getElementById('amount').value) || 0;
         document.getElementById('calculatedTotal').innerText = val.toFixed(2);
     }
 
-    // Function called directly from Android Kotlin/Java code
-    function receiveUserDataFromAndroid(email, phone) {
-        if (email) {
-            document.getElementById('userEmail').value = email;
+    function receiveUserDataFromAndroid(data) {
+        if (!data) return;
+        if (data.email) {
+            document.getElementById('userEmail').value = data.email;
         }
-        if (phone) {
-            let cleanPhone = phone.trim();
+        if (data.phone) {
+            let cleanPhone = data.phone.trim();
             if (cleanPhone.startsWith('+')) {
                 const select = document.getElementById('countryCode');
                 for (let i = 0; i < select.options.length; i++) {
@@ -304,36 +295,40 @@
             }
             document.getElementById('phoneNumber').value = cleanPhone.replace(/[^0-9]/g, '');
         }
+        if (data.countryCode) {
+            document.getElementById('countryCode').value = data.countryCode;
+        }
+        if (data.additionalReference) {
+            document.getElementById('additionalReference').value = data.additionalReference;
+        }
     }
 
     function handleSubmit(event) {
-    event.preventDefault();
+        event.preventDefault();
+        
+        const rawAmount = parseFloat(document.getElementById('amount').value) || 0;
+        const code = document.getElementById('countryCode').value;
+        const localPhone = document.getElementById('phoneNumber').value;
 
-    const rawAmount = parseFloat(document.getElementById('amount').value) || 0;
-    const code = document.getElementById('countryCode').value;
-    const localPhone = document.getElementById('phoneNumber').value;
+        // Bundle form data including the new additionalReference field
+        const formData = {
+            invoiceNumber: document.getElementById('invoiceNumber').value,
+            additionalReference: document.getElementById('additionalReference').value || "",
+            userEmail: document.getElementById('userEmail').value,
+            countryCode: code,
+            phoneNumber: localPhone,
+            fullPhoneNumber: `${code}${localPhone}`,
+            amount: rawAmount.toFixed(2),
+            totalAmount: rawAmount.toFixed(2)
+        };
 
-    // 1. Gather form input values
-    const formData = {
-        invoiceNumber: document.getElementById('invoiceNumber').value,
-        invoiceDate: document.getElementById('invoiceDate').value,
-        userEmail: document.getElementById('userEmail').value,
-        countryCode: code,
-        phoneNumber: localPhone,
-        fullPhoneNumber: `${code}${localPhone}`,
-        amount: rawAmount.toFixed(2),
-        totalAmount: rawAmount.toFixed(2)
-    };
-
-    // 2. Pass JSON string to Android native interface if available
-    if (window.AndroidNative && window.AndroidNative.sendDataToAndroid) {
-        window.AndroidNative.sendDataToAndroid(JSON.stringify(formData));
-    } else {
-        // Fallback for testing directly in a browser
-        console.log("Submitted Data:", formData);
-        alert(`Invoice ${formData.invoiceNumber} submitted for RM ${formData.totalAmount}`);
+        if (window.AndroidNative && window.AndroidNative.sendDataToAndroid) {
+            window.AndroidNative.sendDataToAndroid(JSON.stringify(formData));
+        } else {
+            console.log("Submitted Data:", formData);
+            alert(`Invoice ${formData.invoiceNumber} submitted for RM ${formData.totalAmount}`);
+        }
     }
-}
 </script>
 
 </body>
