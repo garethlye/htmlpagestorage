@@ -243,7 +243,7 @@
                 </div>
             </div>
 
-            <!-- 5. Amount Input -->
+            <!-- 5. Amount Input (Minimum RM 10.00 Validation) -->
             <div class="form-group full-width">
                 <label for="amount">Amount</label>
                 <div class="currency-input-wrapper">
@@ -252,10 +252,10 @@
                         type="number" 
                         id="amount" 
                         step="0.01" 
-                        min="0" 
-                        placeholder="0.00" 
+                        min="10.00" 
+                        placeholder="10.00" 
                         inputmode="decimal" 
-                        oninput="updateTotal()" 
+                        oninput="handleAmountInput(this)" 
                         required>
                 </div>
             </div>
@@ -265,15 +265,18 @@
                 Total Amount: RM <span id="calculatedTotal">0.00</span>
             </div>
 
-            <!-- Submit Button (type="button" + explicit onclick prevents Enter key trigger) -->
+            <!-- Submit Button -->
             <button type="button" class="btn-submit" onclick="handleSubmit(event)">Review and Pay</button>
         </div>
     </form>
 </div>
 
 <script>
-    function updateTotal() {
-        const val = parseFloat(document.getElementById('amount').value) || 0;
+    function handleAmountInput(inputElem) {
+        // Reset any custom error state when user types
+        inputElem.setCustomValidity("");
+        
+        const val = parseFloat(inputElem.value) || 0;
         document.getElementById('calculatedTotal').innerText = val.toFixed(2);
     }
 
@@ -317,18 +320,27 @@
         if (event) event.preventDefault();
 
         const form = document.getElementById('invoiceForm');
-        
-        // Trigger native browser field validation if invoked directly via button click
+        const amountElem = document.getElementById('amount');
+        const rawAmount = parseFloat(amountElem.value) || 0;
+
+        // Reset custom error before checking
+        amountElem.setCustomValidity("");
+
+        // Check if amount is less than RM 10.00
+        if (rawAmount < 10.00) {
+            amountElem.setCustomValidity("Minimum payment amount is RM10");
+        }
+
+        // Trigger native browser field validation (displays validation popup if invalid)
         if (!form.checkValidity()) {
             form.reportValidity();
             return;
         }
 
-        const rawAmount = parseFloat(document.getElementById('amount').value) || 0;
         const code = document.getElementById('countryCode').value;
         const localPhone = document.getElementById('phoneNumber').value;
 
-        // Construct cleaned key-value payload with renames requested
+        // Construct cleaned key-value payload
         const formDataMap = {
             "Invoice Number": document.getElementById('invoiceNumber').value,
             "Additional Reference": document.getElementById('additionalReference').value || "",
