@@ -197,7 +197,8 @@
 
 <div class="container">
     <h2>Invoice Data Input</h2>
-    <form id="invoiceForm" onsubmit="handleSubmit(event)">
+    <!-- Prevents Enter key on soft keyboard from triggering form submit -->
+    <form id="invoiceForm" onsubmit="handleSubmit(event)" onkeydown="preventEnterSubmit(event)">
         <div class="form-grid">
             
             <!-- 1. Invoice Number -->
@@ -212,9 +213,9 @@
                 <input type="text" id="additionalReference" placeholder="e.g. Student ID / Note">
             </div>
 
-            <!-- 3. Your Email -->
+            <!-- 3. Email -->
             <div class="form-group full-width">
-                <label for="userEmail">Your Email</label>
+                <label for="userEmail">Email</label>
                 <input type="email" id="userEmail" placeholder="user@example.com" required>
             </div>
 
@@ -264,8 +265,8 @@
                 Total Amount: RM <span id="calculatedTotal">0.00</span>
             </div>
 
-            <!-- Submit Button -->
-            <button type="submit" class="btn-submit">Review and Pay</button>
+            <!-- Submit Button (type="button" + explicit onclick prevents Enter key trigger) -->
+            <button type="button" class="btn-submit" onclick="handleSubmit(event)">Review and Pay</button>
         </div>
     </form>
 </div>
@@ -274,6 +275,14 @@
     function updateTotal() {
         const val = parseFloat(document.getElementById('amount').value) || 0;
         document.getElementById('calculatedTotal').innerText = val.toFixed(2);
+    }
+
+    // Intercept Enter key press on soft keyboard
+    function preventEnterSubmit(event) {
+        if (event.key === 'Enter' || event.keyCode === 13) {
+            event.preventDefault();
+            return false;
+        }
     }
 
     function receiveUserDataFromAndroid(data) {
@@ -305,35 +314,35 @@
     }
 
     function handleSubmit(event) {
-        event.preventDefault();
+        if (event) event.preventDefault();
 
         const form = document.getElementById('invoiceForm');
-        const formElements = form.querySelectorAll('input, select, textarea');
-        const formDataMap = {};
+        
+        // Trigger native browser field validation if invoked directly via button click
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
 
-        // 1. Automatically grab every form element value using its ID or Name as key
-        formElements.forEach(element => {
-            if (element.type === 'submit' || element.type === 'button') return;
-            const key = element.id || element.name;
-            if (key) {
-                formDataMap[key] = element.value;
-            }
-        });
+        const rawAmount = parseFloat(document.getElementById('amount').value) || 0;
+        const code = document.getElementById('countryCode').value;
+        const localPhone = document.getElementById('phoneNumber').value;
 
-        // 2. Add computed fields for convenience
-        const rawAmount = parseFloat(document.getElementById('amount')?.value) || 0;
-        const code = document.getElementById('countryCode')?.value || "";
-        const localPhone = document.getElementById('phoneNumber')?.value || "";
+        // Construct cleaned key-value payload with renames requested
+        const formDataMap = {
+            "Invoice Number": document.getElementById('invoiceNumber').value,
+            "Additional Reference": document.getElementById('additionalReference').value || "",
+            "Email": document.getElementById('userEmail').value,
+            "Phone Number": `${code}${localPhone}`,
+            "Amount": rawAmount.toFixed(2)
+        };
 
-        formDataMap['fullPhoneNumber'] = `${code}${localPhone}`;
-        formDataMap['amountFormatted'] = rawAmount.toFixed(2);
-
-        // 3. Post JSON string back to Android
+        // Post back to Android
         if (window.AndroidNative && window.AndroidNative.sendDataToAndroid) {
             window.AndroidNative.sendDataToAndroid(JSON.stringify(formDataMap));
         } else {
-            console.log("Mapped Form Data:", formDataMap);
-            alert("Form submitted! Check console for mapped data.");
+            console.log("Renamed Form Data:", formDataMap);
+            alert("Form submitted! Check console for mapped output.");
         }
     }
 </script>
