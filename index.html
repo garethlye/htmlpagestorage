@@ -27,7 +27,11 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            min-height: 100vh;
+            /* Use min-height: 100% instead of 100vh so it resizes smoothly with keyboard */
+            min-height: 100%;
+            /* Enables momentum scrolling on mobile WebViews */
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .container {
